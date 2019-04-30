@@ -14,6 +14,12 @@
 #define BUTTON_SELECT_ANALOG_VALUE  5
 #define BUTTON_NONE_ANALOG_VALUE    0
 
+extern int menuPage;
+extern int cursorPosition;
+extern int activeButton;
+extern int maxMenuPages;
+extern String menuItems[3];
+
 extern byte downArrow;
 extern byte upArrow;
 extern byte menuCursor;

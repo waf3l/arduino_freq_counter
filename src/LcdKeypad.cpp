@@ -42,13 +42,45 @@ volatile byte backlightState = 1;
 String menuItems[] = {"OFFSET", "PRESCALER", "EXIT"};
 
 // Navigation button variables
-int readKey;
 int savedDistance = 0;
 
 // Menu control variables
 int menuPage = 0;
 int maxMenuPages = round(((sizeof(menuItems) / sizeof(String)) / 2) + .5);
 int cursorPosition = 0;
+
+void backLightOn()
+{
+  backlightState = 1;
+  pinMode(BACKLIGHT_PIN, INPUT);
+}
+
+void backLightOff()
+{
+  backlightState = 0;
+  pinMode(BACKLIGHT_PIN, OUTPUT);
+  digitalWrite(BACKLIGHT_PIN, LOW);
+}
+
+// read the buttons ant translet to proper value
+// TODO: prevent to read the same key multiple time
+byte getButton(){               
+    byte button;
+    button = analogRead(BUTTON_PIN);
+
+    if (button > 230 && button < 260) return BUTTON_NONE_ANALOG_VALUE; 
+
+    Serial.println("Pressed button: " + String(button));
+
+    // For V1.1 us this threshold
+    if (button < 40)   return BUTTON_RIGHT_ANALOG_VALUE; 
+    if (button < 70)  return BUTTON_DOWN_ANALOG_VALUE; 
+    if (button < 140)  return BUTTON_UP_ANALOG_VALUE; 
+    if (button < 220)  return BUTTON_SELECT_ANALOG_VALUE; 
+    if (button < 230)  return BUTTON_LEFT_ANALOG_VALUE;   
+
+    return BUTTON_NONE_ANALOG_VALUE;
+}
 
 // This function will generate the 2 menu items that can fit on the screen. They will change as you scroll through your menu. Up and down arrows will indicate your current menu position.
 void mainMenuDraw(LiquidCrystal lcd) {
@@ -179,37 +211,25 @@ void operateMainMenu() {
         activeButton = 1;
         break;
       case 3:
-        button = 0;
-        if (menuPage % 2 == 0 and cursorPosition % 2 != 0) {
-          menuPage = menuPage + 1;
-          menuPage = constrain(menuPage, 0, maxMenuPages);
-        }
+        // button = 0;
+        // if (menuPage % 2 == 0 and cursorPosition % 2 != 0) {
+        //   menuPage = menuPage + 1;
+        //   menuPage = constrain(menuPage, 0, maxMenuPages);
+        // }
 
-        if (menuPage % 2 != 0 and cursorPosition % 2 == 0) {
-          menuPage = menuPage + 1;
-          menuPage = constrain(menuPage, 0, maxMenuPages);
-        }
+        // if (menuPage % 2 != 0 and cursorPosition % 2 == 0) {
+        //   menuPage = menuPage + 1;
+        //   menuPage = constrain(menuPage, 0, maxMenuPages);
+        // }
 
-        cursorPosition = cursorPosition + 1;
-        cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
-        mainMenuDraw();
-        drawCursor();
-        activeButton = 1;
-        break;
+        // cursorPosition = cursorPosition + 1;
+        // cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
+        // mainMenuDraw();
+        // drawCursor();
+        // activeButton = 1;
+        // break;
     }
   }
-}
-
-// If there are common usage instructions on more than 1 of your menu items you can call this function from the sub
-// menus to make things a little more simplified. If you don't have common instructions or verbage on multiple menus
-// I would just delete this void. You must also delete the drawInstructions()function calls from your sub menu functions.
-void drawInstructions() {
-  lcd.setCursor(0, 1); // Set cursor to the bottom line
-  lcd.print("Use ");
-  lcd.write(byte(1)); // Up arrow
-  lcd.print("/");
-  lcd.write(byte(2)); // Down arrow
-  lcd.print(" buttons");
 }
 
 void menuItem1() { // Function executes when you select the 2nd item from main menu
@@ -451,63 +471,3 @@ void menuItem10() { // Function executes when you select the 10th item from main
     }
   }
 }
-
-/*
-*
-*
-*
-*
-*
-*/
-
-void backLightOn()
-{
-  backlightState = 1;
-  pinMode(BACKLIGHT_PIN, INPUT);
-}
-
-void backLightOff()
-{
-  backlightState = 0;
-  pinMode(BACKLIGHT_PIN, OUTPUT);
-  digitalWrite(BACKLIGHT_PIN, LOW);
-}
-
-// read the buttons ant translet to proper value
-byte getButton(){               
-    byte button;
-    button = analogRead(BUTTON_PIN);       // read the value from the sensor 
-
-    // my buttons when read are centered at these valies: 0, 144, 329, 504, 741
-    // we add approx 50 to those values and check to see if we are close
-    // We make this the 1st option for speed reasons since it will be the most likely result
-
-    if (button > 230 && button < 260) return BUTTON_NONE_ANALOG_VALUE; 
-
-    Serial.println("Pressed button: " + String(button));
-
-    // For V1.1 us this threshold
-    if (button < 40)   return BUTTON_RIGHT_ANALOG_VALUE; 
-    if (button < 70)  return BUTTON_DOWN_ANALOG_VALUE; 
-    if (button < 140)  return BUTTON_UP_ANALOG_VALUE; 
-    if (button < 220)  return BUTTON_SELECT_ANALOG_VALUE; 
-    if (button < 230)  return BUTTON_LEFT_ANALOG_VALUE;   
-
-    return BUTTON_NONE_ANALOG_VALUE;                // when all others fail, return this.
-}
-
-
-// This function is called whenever a button press is evaluated. The LCD shield works by observing a voltage drop across the buttons all hooked up to A0.
-// int evaluateButton(int x) {
-//   int result = 0;
-//   if (x < 50) {
-//     result = 1; // right
-//   } else if (x < 195) {
-//     result = 2; // up
-//   } else if (x < 380) {
-//     result = 3; // down
-//   } else if (x < 790) {
-//     result = 4; // left
-//   }
-//   return result;
-// }
