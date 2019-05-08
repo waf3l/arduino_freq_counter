@@ -74,230 +74,220 @@ void loop() {
     }
   }
 
-  int activeButton = 0;
+  // read the buttons
+  lcd_key = getButton();   
 
-  while (activeButton == 0) {
-    // read the buttons
-    lcd_key = getButton();   
-
-    // depending on which button was pushed, we perform an action
-    switch (lcd_key){               
+  // depending on which button was pushed, we perform an action
+  switch (lcd_key){               
+    
+    case BUTTON_NONE_ANALOG_VALUE:{
+      break;
+    }
+    
+    case BUTTON_SELECT_ANALOG_VALUE:{
       
-      case BUTTON_NONE_ANALOG_VALUE:{
-        activeButton = 1;
+      if (appMode == APP_NORMAL_MODE)
+      {
+        // end the freq counter
+        FreqCount.end();
+
+        // set app menu mode
+        appMode = APP_MENU_MODE;
+
+        // display menu
+        mainMenuDraw(lcd);
+        drawCursor(lcd);
+
         break;
       }
-      
-      case BUTTON_SELECT_ANALOG_VALUE:{
-        
-        if (appMode == APP_NORMAL_MODE)
-        {
-          // end the freq counter
-          FreqCount.end();
 
-          // set app menu mode
-          appMode = APP_MENU_MODE;
-
-          activeButton = 1;
-
-          // display menu
-          mainMenuDraw(lcd);
-          drawCursor(lcd);
-
-          break;
-        }
-
-        else if (appMode == APP_MENU_MODE)
-        {
-          // do nothing
-          activeButton = 1;
-          break;
-        }
-
-        else if (appMode == APP_PROCESS_MENU_CMD)
-        {
-          // Save the sub menu settings
-          // Return to root menu
-          // TODO: return to proper position
-          appMode = APP_MENU_MODE;
-          
-          activeButton = 1;
-
-          mainMenuDraw(lcd);
-          drawCursor(lcd);
-
-          break;
-        }
-
-        else 
-        {
-          // Something wrong exit
-          activeButton = 1;
-          break;
-        }
-
+      else if (appMode == APP_MENU_MODE)
+      {
+        // do nothing
+        break;
       }
 
-      case BUTTON_RIGHT_ANALOG_VALUE:{            
-        
-        if (appMode == APP_NORMAL_MODE)
-        {
-          // do nothing
-          activeButton = 1;
-          break;
-        }
+      else if (appMode == APP_PROCESS_MENU_CMD)
+      {
+        // Save the sub menu settings
+        // Return to root menu
+        // TODO: return to proper position
+        appMode = APP_MENU_MODE;
 
-        else if (appMode == APP_MENU_MODE)
-        {
-          // Enter submenu
-          // TODO: Logic
-          activeButton = 1;
-          appMode = APP_PROCESS_MENU_CMD;
-          break;
-        }
+        mainMenuDraw(lcd);
+        drawCursor(lcd);
 
-        else if (appMode == APP_PROCESS_MENU_CMD)
-        {
-          // do nothing
-          activeButton = 1;
-          break;
-        }
-
-        else 
-        {
-          activeButton = 1;
-          break;
-        }
+        break;
       }
 
-      case BUTTON_LEFT_ANALOG_VALUE:{
-        
-        if (appMode == APP_NORMAL_MODE)
-        {
-          // do nothing
-          activeButton = 1;
-          break;
-        }
-
-        else if (appMode == APP_MENU_MODE)
-        {
-          // Go back to normal app mode
-          appMode = APP_NORMAL_MODE;
-
-          //TODO clear all menu counters and position
-          lcd.clear();
-          FreqCount.begin(1000);
-          activeButton = 1;
-          break;
-        }
-
-        else if (appMode == APP_PROCESS_MENU_CMD)
-        {
-          // Return to root menu without save
-          // Set app menu mode
-          // TODO: Return to proper position
-          activeButton = 1;
-          appMode = APP_MENU_MODE;
-          lcd.clear();
-          mainMenuDraw(lcd);
-          drawCursor(lcd);
-          break;
-        }
-
-        else 
-        {
-          activeButton = 1;
-          break;
-        }
-      }  
-
-      case BUTTON_UP_ANALOG_VALUE:{
-        
-        if (appMode == APP_NORMAL_MODE)
-        {
-          // do nothing
-          activeButton = 1;
-          break;
-        }
-
-        else if (appMode == APP_MENU_MODE)
-        {
-          // Go thru menu items up
-          activeButton = 1;
-          break;
-        }
-
-        else if (appMode == APP_PROCESS_MENU_CMD)
-        {
-          // change value up
-          activeButton = 1;
-          break;
-        }
-
-        else 
-        {
-          activeButton = 1;
-          break;
-        }
+      else 
+      {
+        // Something wrong exit
+        break;
       }
 
-      case BUTTON_DOWN_ANALOG_VALUE:{
-        
-        if (appMode == APP_NORMAL_MODE)
-        {
-          // do nothing
-          activeButton = 1;
-          break;
-        }
-
-        else if (appMode == APP_MENU_MODE)
-        {
-          // check current menu position
-          if (menuPage % 2 == 0 and cursorPosition % 2 != 0) {
-            menuPage = menuPage + 1;
-            menuPage = constrain(menuPage, 0, maxMenuPages);
-          }
-
-          if (menuPage % 2 != 0 and cursorPosition % 2 == 0) {
-            menuPage = menuPage + 1;
-            menuPage = constrain(menuPage, 0, maxMenuPages);
-          }
-
-          // set the cursor position
-          cursorPosition = cursorPosition + 1;
-          cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
-
-          mainMenuDraw(lcd);
-          drawCursor(lcd);
-
-          activeButton = 1;
-
-          break;
-        }
-
-        else if (appMode == APP_PROCESS_MENU_CMD)
-        {
-          // change value down
-          activeButton = 1;
-          break;
-        }
-
-        else 
-        {
-          activeButton = 1;
-          break;
-        }
-      }
-
-      default: {
-        activeButton = 1;
-        appMode = APP_NORMAL_MODE;
-      }
-  
     }
+
+    case BUTTON_RIGHT_ANALOG_VALUE:{            
+      
+      if (appMode == APP_NORMAL_MODE)
+      {
+        // do nothing
+        break;
+      }
+
+      else if (appMode == APP_MENU_MODE)
+      {
+        // Enter submenu
+        // TODO: Logic
+        appMode = APP_PROCESS_MENU_CMD;
+        break;
+      }
+
+      else if (appMode == APP_PROCESS_MENU_CMD)
+      {
+        // do nothing
+        break;
+      }
+
+      else 
+      {
+        break;
+      }
+    }
+
+    case BUTTON_LEFT_ANALOG_VALUE:{
+      
+      if (appMode == APP_NORMAL_MODE)
+      {
+        // do nothing
+        break;
+      }
+
+      else if (appMode == APP_MENU_MODE)
+      {
+        // Go back to normal app mode
+        appMode = APP_NORMAL_MODE;
+
+        //TODO clear all menu counters and position
+        lcd.clear();
+        FreqCount.begin(1000);
+        break;
+      }
+
+      else if (appMode == APP_PROCESS_MENU_CMD)
+      {
+        // Return to root menu without save
+        // Set app menu mode
+        // TODO: Return to proper position
+        appMode = APP_MENU_MODE;
+        lcd.clear();
+        mainMenuDraw(lcd);
+        drawCursor(lcd);
+        break;
+      }
+
+      else 
+      {
+        break;
+      }
+    }  
+
+    case BUTTON_UP_ANALOG_VALUE:{
+      
+      if (appMode == APP_NORMAL_MODE)
+      {
+        // do nothing
+        break;
+      }
+
+      else if (appMode == APP_MENU_MODE)
+      {
+        // Go thru menu items up
+        // check current menu position
+        if (menuPage % 2 == 0 and cursorPosition % 2 != 0) {
+          menuPage = menuPage - 1;
+          menuPage = constrain(menuPage, 0, maxMenuPages);
+        }
+
+        if (menuPage % 2 != 0 and cursorPosition % 2 == 0) {
+          menuPage = menuPage - 1;
+          menuPage = constrain(menuPage, 0, maxMenuPages);
+        }
+
+        // set the cursor position
+        cursorPosition = cursorPosition - 1;
+        cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
+
+        mainMenuDraw(lcd);
+        drawCursor(lcd);
+
+        break;
+      }
+
+      else if (appMode == APP_PROCESS_MENU_CMD)
+      {
+        // change value up
+        // TODO: Logic
+        break;
+      }
+
+      else 
+      {
+        break;
+      }
+    }
+
+    case BUTTON_DOWN_ANALOG_VALUE:{
+      
+      if (appMode == APP_NORMAL_MODE)
+      {
+        // do nothing
+        break;
+      }
+
+      else if (appMode == APP_MENU_MODE)
+      {
+        // Go thru menu down
+        // check current menu position
+        if (menuPage % 2 == 0 and cursorPosition % 2 != 0) {
+          menuPage = menuPage + 1;
+          menuPage = constrain(menuPage, 0, maxMenuPages);
+        }
+
+        if (menuPage % 2 != 0 and cursorPosition % 2 == 0) {
+          menuPage = menuPage + 1;
+          menuPage = constrain(menuPage, 0, maxMenuPages);
+        }
+
+        // set the cursor position
+        cursorPosition = cursorPosition + 1;
+        cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
+
+        mainMenuDraw(lcd);
+        drawCursor(lcd);
+
+        break;
+      }
+
+      else if (appMode == APP_PROCESS_MENU_CMD)
+      {
+        // change value down
+        // TODO: Logic
+        break;
+      }
+
+      else 
+      {
+        break;
+      }
+    }
+
+    default: {
+      appMode = APP_NORMAL_MODE;
+    }
+
   }
-  {
-    /* code */
-  }
+
 }
 
