@@ -9,6 +9,40 @@
 #include <LiquidCrystal.h>
 #include <LcdKeypad.h>
 
+// Creates 3 custom char for the menu display
+byte downArrow[8] = {
+  0b00100, //   *
+  0b00100, //   *
+  0b00100, //   *
+  0b00100, //   *
+  0b00100, //   *
+  0b10101, // * * *
+  0b01110, //  ***
+  0b00100  //   *
+};
+
+byte upArrow[8] = {
+  0b00100, //   *
+  0b01110, //  ***
+  0b10101, // * * *
+  0b00100, //   *
+  0b00100, //   *
+  0b00100, //   *
+  0b00100, //   *
+  0b00100  //   *
+};
+
+byte menuCursor[8] = {
+  B01000, //  *
+  B00100, //   *
+  B00010, //    *
+  B00001, //     *
+  B00010, //    *
+  B00100, //   *
+  B01000, //  *
+  B00000  //
+};
+
 enum AppModeValues
 {
   APP_NORMAL_MODE,
@@ -32,12 +66,13 @@ void setup() {
 
   // set up the LCD's number of columns and rows:
   lcd.begin(LCD_COLS, LCD_ROWS);
-  Serial.println("LCD initialized");
-  
+
   // Creates the byte for the 3 custom characters
   lcd.createChar(0, menuCursor);
   lcd.createChar(1, upArrow);
   lcd.createChar(2, downArrow);
+
+  Serial.println("LCD initialized");
   Serial.println("Characters created");
 
   lcd.clear();
@@ -76,7 +111,7 @@ void loop() {
 
   // read the buttons
   lcd_key = getButton();   
-
+  Serial.println("loop");
   // depending on which button was pushed, we perform an action
   switch (lcd_key){               
     
@@ -141,7 +176,17 @@ void loop() {
         // Enter submenu
         // TODO: Logic
         appMode = APP_PROCESS_MENU_CMD;
-        break;
+        switch (cursorPosition) { // The case that is selected here is dependent on which menu page you are on and where the cursor is.
+          case 0:
+            menuItem1(lcd);
+            break;
+          case 1:
+            menuItem2(lcd);
+            break;
+          case 2:
+            menuItem3(lcd);
+            break;
+        }
       }
 
       else if (appMode == APP_PROCESS_MENU_CMD)

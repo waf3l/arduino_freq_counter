@@ -14,15 +14,11 @@
 #define BUTTON_SELECT_ANALOG_VALUE  5
 #define BUTTON_NONE_ANALOG_VALUE    0
 
+
 extern int menuPage;
 extern int cursorPosition;
-extern int activeButton;
 extern int maxMenuPages;
 extern String menuItems[3];
-
-extern byte downArrow;
-extern byte upArrow;
-extern byte menuCursor;
 
 extern byte getButton ();
 
@@ -30,3 +26,7 @@ extern void backLightOn();
 extern void backLightOff();
 extern void mainMenuDraw(LiquidCrystal lcd);
 extern void drawCursor(LiquidCrystal lcd);
+
+extern void menuItem1(LiquidCrystal lcd);
+extern void menuItem2(LiquidCrystal lcd);
+extern void menuItem3(LiquidCrystal lcd);
