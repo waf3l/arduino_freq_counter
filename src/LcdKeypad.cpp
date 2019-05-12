@@ -35,7 +35,7 @@ byte getButton(){
     if (button > 230 && button < 260) return BUTTON_NONE_ANALOG_VALUE; 
 
     Serial.println("Pressed button: " + String(button));
-
+    
     // For V1.1 us this threshold
     if (button < 40)   return BUTTON_RIGHT_ANALOG_VALUE; 
     if (button < 70)  return BUTTON_DOWN_ANALOG_VALUE; 
