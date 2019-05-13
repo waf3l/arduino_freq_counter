@@ -1,5 +1,6 @@
 #include "LcdKeypad.h"
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
 
 volatile byte displayBrightness = 4;
 volatile byte backlightState = 1;
@@ -99,124 +100,50 @@ void drawCursor(LiquidCrystal lcd) {
   }
 }
 
-
-// void operateMainMenu() {
-//   int activeButton = 0;
-//   while (activeButton == 0) {
-//     int button;
-//     readKey = analogRead(0);
-//     if (readKey < 790) {
-//       delay(100);
-//       readKey = analogRead(0);
-//     }
-//     button = evaluateButton(readKey);
-//     switch (button) {
-//       case 0: // When button returns as 0 there is no action taken
-//         break;
-//       case 1:  // This case will execute if the "forward" button is pressed
-//         button = 0;
-//         switch (cursorPosition) { // The case that is selected here is dependent on which menu page you are on and where the cursor is.
-//           case 0:
-//             menuItem1();
-//             break;
-//           case 1:
-//             menuItem2();
-//             break;
-//           case 2:
-//             menuItem3();
-//             break;
-//           case 3:
-//             menuItem4();
-//             break;
-//           case 4:
-//             menuItem5();
-//             break;
-//           case 5:
-//             menuItem6();
-//             break;
-//           case 6:
-//             menuItem7();
-//             break;
-//           case 7:
-//             menuItem8();
-//             break;
-//           case 8:
-//             menuItem9();
-//             break;
-//           case 9:
-//             menuItem10();
-//             break;
-//         }
-//         activeButton = 1;
-//         mainMenuDraw();
-//         drawCursor();
-//         break;
-//       case 2:
-//         button = 0;
-//         if (menuPage == 0) {
-//           cursorPosition = cursorPosition - 1;
-//           cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
-//         }
-//         if (menuPage % 2 == 0 and cursorPosition % 2 == 0) {
-//           menuPage = menuPage - 1;
-//           menuPage = constrain(menuPage, 0, maxMenuPages);
-//         }
-
-//         if (menuPage % 2 != 0 and cursorPosition % 2 != 0) {
-//           menuPage = menuPage - 1;
-//           menuPage = constrain(menuPage, 0, maxMenuPages);
-//         }
-
-//         cursorPosition = cursorPosition - 1;
-//         cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
-
-//         mainMenuDraw();
-//         drawCursor();
-//         activeButton = 1;
-//         break;
-//       case 3:
-//         // button = 0;
-//         // if (menuPage % 2 == 0 and cursorPosition % 2 != 0) {
-//         //   menuPage = menuPage + 1;
-//         //   menuPage = constrain(menuPage, 0, maxMenuPages);
-//         // }
-
-//         // if (menuPage % 2 != 0 and cursorPosition % 2 == 0) {
-//         //   menuPage = menuPage + 1;
-//         //   menuPage = constrain(menuPage, 0, maxMenuPages);
-//         // }
-
-//         // cursorPosition = cursorPosition + 1;
-//         // cursorPosition = constrain(cursorPosition, 0, ((sizeof(menuItems) / sizeof(String)) - 1));
-//         // mainMenuDraw();
-//         // drawCursor();
-//         // activeButton = 1;
-//         // break;
-//     }
-//   }
-// }
-
-void menuItem1(LiquidCrystal lcd) { // Function executes when you select the 2nd item from main menu
+void menuItem1(LiquidCrystal lcd) {
   
   lcd.clear();
-  lcd.setCursor(3, 0);
-  lcd.print("Sub Menu 2");
+  lcd.setCursor(0, 0);
+  lcd.print("SET OFFEST VAL:");
+  
+  int offsetVals[5];
 
-  // while (activeButton == 0) {
-  //   int button;
-  //   readKey = analogRead(0);
-  //   if (readKey < 790) {
-  //     delay(100);
-  //     readKey = analogRead(0);
-  //   }
-  //   button = evaluateButton(readKey);
-  //   switch (button) {
-  //     case 4:  // This case will execute if the "back" button is pressed
-  //       button = 0;
-  //       activeButton = 1;
-  //       break;
-  //   }
-  // }
+  for (size_t i = OFFSET_START_VALUE_ADDRESS; i < OFFSET_END_VALUE_ADDRESS + 1; i++)
+  {
+    // set cursor to beginning
+    lcd.setCursor(i,1);
+
+    // read value from memory
+    int val = EEPROM.read(i);
+
+    // debug
+    Serial.println(val);
+    
+    // store the value in temp array
+    offsetVals[i] = val;
+
+    // process the value
+    if (val == 255){
+      lcd.print('0');
+    } else {
+      lcd.print(char(val));
+    }
+  }
+  
+  int activeButton = 0;
+
+  while (activeButton == 0) {
+
+    byte button = getButton();
+
+    switch (button) {
+      case BUTTON_LEFT_ANALOG_VALUE:  // This case will execute if the "back" button is pressed
+        button = 0;
+        activeButton = 1;
+        break;
+    }
+    delay(100);
+  }
 }
 
 void menuItem2(LiquidCrystal lcd) { // Function executes when you select the 2nd item from main menu
