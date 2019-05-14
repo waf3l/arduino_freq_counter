@@ -193,12 +193,21 @@ void loop() {
           switch (cursorPosition) { // The case that is selected here is dependent on which menu page you are on and where the cursor is.
             case 0:
               menuItem1(lcd);
+              mainMenuDraw(lcd);
+              drawCursor(lcd);
+              appMode = APP_MENU_MODE;
               break;
             case 1:
               menuItem2(lcd);
+              mainMenuDraw(lcd);
+              drawCursor(lcd);
+              appMode = APP_MENU_MODE;
               break;
             case 2:
               menuItem3(lcd);
+              mainMenuDraw(lcd);
+              drawCursor(lcd);
+              appMode = APP_MENU_MODE;
               break;
           }
           menuLoop = 0;

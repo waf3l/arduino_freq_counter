@@ -1,6 +1,6 @@
 #include "LcdKeypad.h"
 #include <LiquidCrystal.h>
-#include <EEPROM.h>
+#include <Offset.h>
 
 volatile byte displayBrightness = 4;
 volatile byte backlightState = 1;
@@ -26,8 +26,6 @@ void backLightOff()
   digitalWrite(BACKLIGHT_PIN, LOW);
 }
 
-// read the buttons ant translet to proper value
-// TODO: prevent to read the same key multiple time
 byte getButton(){               
 
     byte button;
@@ -102,34 +100,67 @@ void drawCursor(LiquidCrystal lcd) {
 
 void menuItem1(LiquidCrystal lcd) {
   
+  byte curPosStart = 0;
+  byte curPosEnd = 5;
+  byte curPos = 0;
+
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("SET OFFEST VAL:");
-  
-  int offsetVals[5];
+  lcd.print("SET OFFSET VAL:");
 
-  for (size_t i = OFFSET_START_VALUE_ADDRESS; i < OFFSET_END_VALUE_ADDRESS + 1; i++)
-  {
-    // set cursor to beginning
-    lcd.setCursor(i,1);
+  getOffset();
 
-    // read value from memory
-    int val = EEPROM.read(i);
+  lcd.setCursor(0,1);
+  if (offsetData.f1 >= 0 && offsetData.f1 <= 9){
+    lcd.print(offsetData.f1);
+  } else {
+    lcd.print(0);
+    offsetData.f1 = 0;
+  }
 
-    // debug
-    Serial.println(val);
-    
-    // store the value in temp array
-    offsetVals[i] = val;
-
-    // process the value
-    if (val == 255){
-      lcd.print('0');
-    } else {
-      lcd.print(char(val));
-    }
+  lcd.setCursor(1,1);
+  if (offsetData.f2 >= 0 && offsetData.f2 <= 9){
+    lcd.print(offsetData.f2);
+  } else {
+    lcd.print(0);
+    offsetData.f2 = 0;
   }
   
+  lcd.setCursor(2,1);
+  if (offsetData.f3 >= 0 && offsetData.f3 <= 9){
+    lcd.print(offsetData.f3);
+  } else {
+    lcd.print(0);
+    offsetData.f3 = 0;
+  }
+  
+  lcd.setCursor(3,1);
+  if (offsetData.f4 >= 0 && offsetData.f4 <= 9){
+    lcd.print(offsetData.f4);
+  } else {
+    lcd.print(0);
+    offsetData.f4 = 0;
+  }
+  
+  lcd.setCursor(4,1);
+  if (offsetData.f5 >= 0 && offsetData.f5 <= 9){
+    lcd.print(offsetData.f5);
+  } else {
+    lcd.print(0);
+    offsetData.f5 = 0;
+  }
+
+  lcd.setCursor(5,1);
+  if (offsetData.f6 >= 0 && offsetData.f6 <= 9){
+    lcd.print(offsetData.f6);
+  } else {
+    lcd.print(0);
+    offsetData.f6 = 0;
+  }
+  delay(200);
+  lcd.setCursor(0,1);
+  lcd.blink();
+
   int activeButton = 0;
 
   while (activeButton == 0) {
@@ -137,12 +168,106 @@ void menuItem1(LiquidCrystal lcd) {
     byte button = getButton();
 
     switch (button) {
-      case BUTTON_LEFT_ANALOG_VALUE:  // This case will execute if the "back" button is pressed
-        button = 0;
+      case BUTTON_LEFT_ANALOG_VALUE:
+        if (curPos > curPosStart) {
+          curPos --;
+          lcd.noBlink();
+          lcd.setCursor(curPos,1);
+          lcd.blink();
+        }
+        break;
+      case BUTTON_RIGHT_ANALOG_VALUE:
+        if (curPos < curPosEnd) {
+          curPos ++;
+          lcd.noBlink();
+          lcd.setCursor(curPos,1);
+          lcd.blink();
+        }
+        break;
+      case BUTTON_UP_ANALOG_VALUE:
+        if (curPos == 0) {
+          if (offsetData.f1 < 9) {
+            offsetData.f1 ++;
+            lcd.print(offsetData.f1);
+            lcd.setCursor(curPos,1);
+          }
+        }  else if (curPos == 1) {
+          if (offsetData.f2 < 9) {
+            offsetData.f2 ++;
+            lcd.print(offsetData.f2);
+            lcd.setCursor(curPos,1);
+          }
+        } else if (curPos == 2) {
+          if (offsetData.f3 < 9) {
+            offsetData.f3 ++;
+            lcd.print(offsetData.f3);
+            lcd.setCursor(curPos,1);
+          }        
+        } else if (curPos == 3) {
+          if (offsetData.f4 < 9) {
+            offsetData.f4 ++;
+            lcd.print(offsetData.f4);
+            lcd.setCursor(curPos,1);
+          }        
+        } else if (curPos == 4) {
+          if (offsetData.f5 < 9) {
+            offsetData.f5 ++;
+            lcd.print(offsetData.f5);
+            lcd.setCursor(curPos,1);
+          }        
+        } else if (curPos == 5) {
+          if (offsetData.f6 < 9) {
+            offsetData.f6 ++;
+            lcd.print(offsetData.f6);
+            lcd.setCursor(curPos,1);
+          }        
+        }
+        break;
+      case BUTTON_DOWN_ANALOG_VALUE:
+        if (curPos == 0) {
+          if (offsetData.f1 > 0) {
+            offsetData.f1 --;
+            lcd.print(offsetData.f1);
+            lcd.setCursor(curPos,1);
+          }
+        }  else if (curPos == 1) {
+          if (offsetData.f2 > 0) {
+            offsetData.f2 --;
+            lcd.print(offsetData.f2);
+            lcd.setCursor(curPos,1);
+          }
+        } else if (curPos == 2) {
+          if (offsetData.f3 > 0) {
+            offsetData.f3 --;
+            lcd.print(offsetData.f3);
+            lcd.setCursor(curPos,1);
+          }        
+        } else if (curPos == 3) {
+          if (offsetData.f4 > 0) {
+            offsetData.f4 --;
+            lcd.print(offsetData.f4);
+            lcd.setCursor(curPos,1);
+          }        
+        } else if (curPos == 4) {
+          if (offsetData.f5 > 0) {
+            offsetData.f5 --;
+            lcd.print(offsetData.f5);
+            lcd.setCursor(curPos,1);
+          }        
+        } else if (curPos == 5) {
+          if (offsetData.f6 > 0) {
+            offsetData.f6 --;
+            lcd.print(offsetData.f6);
+            lcd.setCursor(curPos,1);
+          }        
+        }
+        break;
+      case BUTTON_SELECT_ANALOG_VALUE:
         activeButton = 1;
+        lcd.noBlink();
         break;
     }
-    delay(100);
+    delay(200);
   }
 }
 
