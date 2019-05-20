@@ -110,6 +110,8 @@ void menuItem1(LiquidCrystal lcd) {
 
   getOffset();
 
+  OFFSET oldOffset = offsetData;
+
   lcd.setCursor(0,1);
   if (offsetData.f1 >= 0 && offsetData.f1 <= 9){
     lcd.print(offsetData.f1);
@@ -264,6 +266,9 @@ void menuItem1(LiquidCrystal lcd) {
         break;
       case BUTTON_SELECT_ANALOG_VALUE:
         activeButton = 1;
+        if (!compareOffset(oldOffset, offsetData)) {
+          setOffset(offsetData);
+        }
         lcd.noBlink();
         break;
     }

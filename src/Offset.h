@@ -13,3 +13,5 @@ struct OFFSET
 extern struct OFFSET offsetData;
 
 extern void getOffset();
+extern void setOffset(OFFSET payload);
+extern bool compareOffset(OFFSET oldOffset, OFFSET newOffset);
