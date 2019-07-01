@@ -2,6 +2,7 @@
 
 struct OFFSET
 {
+    byte type;
     byte f1;
     byte f2;
     byte f3;
@@ -13,5 +14,6 @@ struct OFFSET
 extern struct OFFSET offsetData;
 
 extern void getOffset();
+extern long convert();
 extern void setOffset(OFFSET payload);
 extern bool compareOffset(OFFSET oldOffset, OFFSET newOffset);

@@ -13,7 +13,9 @@ void setOffset(OFFSET payload) {
 };
 
 bool compareOffset(OFFSET oldOffset, OFFSET newOffset) {
-    if (oldOffset.f1 != newOffset.f1) {
+    if (oldOffset.type != newOffset.type) {
+        return false;
+    } else if (oldOffset.f1 != newOffset.f1) {
         return false;
     } else if (oldOffset.f2 != newOffset.f2) {
         return false;
@@ -28,4 +30,8 @@ bool compareOffset(OFFSET oldOffset, OFFSET newOffset) {
     } else {
         return true;
     }
+}
+
+long convert() {
+    return offsetData.f6*1+offsetData.f5*10+offsetData.f4*100+offsetData.f3*1000+offsetData.f2*10000+offsetData.f1*100000;
 }
